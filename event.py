@@ -35,6 +35,10 @@ async def on_user_message(message):
         msg = 'hello {0.author.mention}'.format(message)
         asyncio.ensure_future(message.channel.send(msg))
 
+    if message.content.startswith('dn-whoami'):
+        msg = 'Your discord id: `{0.author.id}`'.format(message)
+        asyncio.ensure_future(message.channel.send(msg))
+
     if message.content.startswith('dn-help'):
         msg = 'dn-help: To get command help \n \n dn-fetch: To get list of questions \n \n dn-mark-done: To mark question done \n \n dn-mark-undone: To mark question undone \n \n dn-mark-doubt: To get mark question as doubt \n \n dn-report: To get progress report \n \n dn-leaderboard: To get list of top 10 students of week \n '
 
