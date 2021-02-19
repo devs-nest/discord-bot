@@ -57,23 +57,23 @@ class UserMessageHandler:
             asyncio.ensure_future(submit_user_details(message.author, user_email))
 
     def process_dn_fetch(self, message):
-        if await check_channel_ask_a_bot(self, message):
+        if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(fetch(message))
 
     def process_dn_mark_done(self, message):
-        if await check_channel_ask_a_bot(self, message):
+        if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(mark_ques_status(message.author, message, 0))
 
     def process_dn_mark_undone(self, message):
-        if await check_channel_ask_a_bot(self, message):
+        if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(mark_ques_status(message.author, message, 1))
 
     def process_dn_doubt(self, message):
-        if await check_channel_ask_a_bot(self, message):
+        if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(mark_ques_status(message.author, message, 2))
 
     def process_dn_report(self, message):
-        if await check_channel_ask_a_bot(self, message):
+        if await check_channel_ask_a_bot(message):
             days = await calc_days(message)
             if days:
                 resp = await get_report_from_db(message, days)
@@ -81,7 +81,7 @@ class UserMessageHandler:
                 asyncio.ensure_future(show_user_report(resp, message, days))
 
     def process_dn_leaderboard(self, message):
-        if await check_channel_ask_a_bot(self, message):
+        if await check_channel_ask_a_bot(message):
             global current_leaderboard_page_number
             global last_leaderboard_message_id
 
@@ -94,6 +94,7 @@ class UserMessageHandler:
                 message, current_leaderboard_page_number
             )
 
+    @staticmethod
     def _get_prompt_help():
         return discord.Embed(
             title="DN Bot Guide",
@@ -106,7 +107,16 @@ class UserMessageHandler:
 
 
 async def on_user_message(self, message):
-    command = message.split(" ", 1)[0].replace("-", "_")
-    method_name = f"process_{command}"
-    method = getattr(UserMessageHandler(), method_name)
-    method(message)
+    if message.content.startswith("$dn"):
+        command = message.split(" ", 1)[0].replace("-", "_")
+        method_name = f"process_{command}"
+        method = getattr(UserMessageHandler(), method_name, None)
+        if method:
+            method(message)
+        else:
+            asyncio.ensure_future(
+                message.channel.send(
+                    "Seems like you have entered a wrong command. "
+                    "Enter `dn-help` to get a list of all valid commands."
+                )
+            )

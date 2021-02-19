@@ -12,6 +12,16 @@ from utils import data_not_found, send_request, take_input_dm
 load_dotenv()
 total_leaderboard_pages = 100
 
+STATUS_DESC_MAP = {
+    0: "Congratulations‼ \nThis question has been marked as done. Keep Going 😄",
+    1: "Hey, This question has been marked as undone. Try solving it. All the best‼ 😎",
+    2: (
+        "Seems like, you're Stuck‼ 😶\nThis question has been marked as doubt. "
+        "Give it a try, in case you are not able to solve, "
+        "feel free to contact your mentor. Let this not hinder your learning 👍"
+    ),
+}
+
 
 def extract_content(sample):
     content = []
@@ -250,23 +260,9 @@ async def mark_ques_status(user, command, status):
         return res
     res = res.json()
 
-    if status == 0:
-        desc = "Congratulations‼ \nThis question has been marked as done. Keep Going 😄"
-    elif status == 1:
-        desc = (
-            "Hey, This question has been marked as undone."
-            "Try solving it. All the best‼ 😎"
-        )
-    elif status == 2:
-        desc = (
-            "Seems like, you're Stuck‼ 😶\nThis question has been marked as doubt. "
-            "Give it a try, in case you are not able to solve, "
-            "feel free to contact your mentor. Let this not hinder your learning 👍"
-        )
+    desc = STATUS_DESC_MAP[status]
     embed = discord.Embed(
-        title="Question status marked successfully 👍 ",
-        description=desc,  # This statement can fail with variable used befire
-        # assignment as there is no else block in the above else-if statements.
+        title="Question status marked successfully 👍 ", description=desc
     )
 
     if not res["data"]["id"]:
