@@ -260,6 +260,7 @@ async def mark_ques_status(user, command, status):
         return res
     res = res.json()
 
+    # This statement can fail with KeyError if the status is anything greater than 2.
     desc = STATUS_DESC_MAP[status]
     embed = discord.Embed(
         title="Question status marked successfully 👍 ", description=desc
