@@ -51,28 +51,28 @@ class UserMessageHandler:
 
         asyncio.ensure_future(message.channel.send(embed=prompt))
 
-    def process_dn_email(self, message):
+    async def process_dn_email(self, message):
         user_email = await get_user_email_and_id(message.author)
         if user_email:
             asyncio.ensure_future(submit_user_details(message.author, user_email))
 
-    def process_dn_fetch(self, message):
+    async def process_dn_fetch(self, message):
         if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(fetch(message))
 
-    def process_dn_mark_done(self, message):
+    async def process_dn_mark_done(self, message):
         if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(mark_ques_status(message.author, message, 0))
 
-    def process_dn_mark_undone(self, message):
+    async def process_dn_mark_undone(self, message):
         if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(mark_ques_status(message.author, message, 1))
 
-    def process_dn_doubt(self, message):
+    async def process_dn_doubt(self, message):
         if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(mark_ques_status(message.author, message, 2))
 
-    def process_dn_report(self, message):
+    async def process_dn_report(self, message):
         if await check_channel_ask_a_bot(message):
             days = await calc_days(message)
             if days:
@@ -80,7 +80,7 @@ class UserMessageHandler:
                 # ToDo report handling
                 asyncio.ensure_future(show_user_report(resp, message, days))
 
-    def process_dn_leaderboard(self, message):
+    async def process_dn_leaderboard(self, message):
         if await check_channel_ask_a_bot(message):
             global current_leaderboard_page_number
             global last_leaderboard_message_id
@@ -106,7 +106,7 @@ class UserMessageHandler:
         ).set_thumbnail(url="https://cdn.wayscript.com/blog_img/83/DiscordBotThumb.png")
 
 
-async def on_user_message(self, message):
+def on_user_message(self, message):
     if message.content.startswith("$dn"):
         command = message.split(" ", 1)[0].replace("-", "_")
         method_name = f"process_{command}"
