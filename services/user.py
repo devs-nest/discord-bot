@@ -89,8 +89,7 @@ async def submit_user_details(member, user_email=None):
                 "name": display_name,
                 "discord_id": str(member.id),
                 "username": name,
-                "password": "1234",
-                "buddy": 0,
+                "discord_active": 1,
             },
             "type": "users",
         }
@@ -100,6 +99,25 @@ async def submit_user_details(member, user_email=None):
         infoLogger.info("User request successfully sent")
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
         errorLogger.error("Error while registering the user to the database", e)
+        return
+
+    return resp.json()
+
+
+# Update user status in database
+async def update_user_status(member, is_active):
+    url = "/api/v1/users/update_status"
+    myobj = {
+        "data": {
+            "attributes": {"discord_id": str(member.id), "discord_active": is_active},
+            "type": "users",
+        }
+    }
+    try:
+        resp = await send_request(method_type="POST", url=url, data=myobj)
+        infoLogger.info("User status successfully updated")
+    except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
+        errorLogger.error("Error while updating user status in the database", e)
         return
 
     return resp.json()

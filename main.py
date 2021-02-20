@@ -8,8 +8,7 @@ from client import client
 from event import on_user_message
 from logger import errorLogger, infoLogger
 from services.content import on_leaderboard_reaction
-from services.mmt import assign_mentor_to_new_user
-from services.user import new_member_joined
+from services.user import new_member_joined, update_user_status
 
 load_dotenv()
 
@@ -22,13 +21,30 @@ async def on_ready():
 
 
 @client.event
+async def on_member_remove(member):
+    infoLogger.info(
+        f"User has left the server with userid : {member.id} "
+        f"and username : {member.display_name}"
+    )
+    resp = await update_user_status(member, 0)
+    if resp:
+        infoLogger.info("User status successfully updated")
+    else:
+        errorLogger.error("Error while updating user status")
+
+
+@client.event
 async def on_member_join(member):
-    resp = await new_member_joined(member, int(os.getenv("GREETING_CHANNEL")))
+    _ = await new_member_joined(member, int(os.getenv("GREETING_CHANNEL")))
+    # commenting as we're not assigning mentors right now.
+    # todo: need to enable in the future
+    """
     if resp:
         asyncio.ensure_future(assign_mentor_to_new_user(resp))
         infoLogger.info("Mentor assigned the the new user")
     else:
         errorLogger.error("Error while assigning mentor to the particular user")
+    """
 
 
 @client.event

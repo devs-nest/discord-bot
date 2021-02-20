@@ -85,6 +85,7 @@ async def send_request(method_type, url, data=None):
     headers = {
         "Content-Type": "application/vnd.api+json",
         "Authorization": "Bearer " + os.getenv("TOKEN"),
+        "User-Type": "Bot",
     }
 
     try:

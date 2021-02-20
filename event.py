@@ -47,6 +47,7 @@ async def on_user_message(message):
     if message.content.startswith("dn-help"):
         msg = (
             "dn-help: To get command help.\n\n"
+            "dn-whoami: To get your discord id.\n\n"
             "dn-fetch: To get list of questions.\n\n"
             "dn-mark-done: To mark a question as done.\n\n"
             "dn-mark-undone: To mark a question as undone.\n\n"
@@ -66,6 +67,10 @@ async def on_user_message(message):
         user_email = await get_user_email_and_id(message.author)
         if user_email:
             asyncio.ensure_future(submit_user_details(message.author, user_email))
+
+    if message.content.startswith('dn-whoami'):
+        msg = 'Your discord id: `{0.author.id}`'.format(message)
+        asyncio.ensure_future(message.channel.send(msg))
 
     if message.content.startswith("dn-fetch"):
         if await check_channel_ask_a_bot(message):
