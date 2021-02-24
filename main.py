@@ -26,7 +26,7 @@ async def on_member_remove(member):
         f"User has left the server with userid : {member.id} "
         f"and username : {member.display_name}"
     )
-    resp = await update_user_status(member, 0)
+    resp = await update_user_status(member)
     if resp:
         infoLogger.info("User status successfully updated")
     else:
