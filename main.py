@@ -18,6 +18,7 @@ async def on_ready():
     print("Logged in as", client.user.name, client.user.id)
     print("------")
     # await listExistingMembers()
+    # await markLeftMembers()
 
 
 @client.event
@@ -26,7 +27,7 @@ async def on_member_remove(member):
         f"User has left the server with userid : {member.id} "
         f"and username : {member.display_name}"
     )
-    resp = await update_user_status(member)
+    resp = await update_user_status(member.id)
     if resp:
         infoLogger.info("User status successfully updated")
     else:
