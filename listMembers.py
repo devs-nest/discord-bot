@@ -23,20 +23,22 @@ async def listExistingMembers():
 
 async def markLeftMembers():
     res = await getAllMembers()
-    d = {}
+    all_database_members_set = set()
     for i in res["data"]:
-        d[int(i["attributes"]["discord_id"])] = 1
+        all_database_members_set.add(int(i["attributes"]["discord_id"]))
+    all_members_on_discord_set = set()
     for member in client.get_all_members():
         if not member.bot:
-            if member.id in d:
-                d[member.id] = 0
-    for i in d.keys():
-        if d[i] == 1:
-            resp = await update_user_status(i)
-            if resp:
-                infoLogger.info("User status successfully updated")
-            else:
-                errorLogger.error("Error while updating user status")
+            all_members_on_discord_set.add(member.id)
+
+    left_members_set = all_database_members_set - all_members_on_discord_set
+
+    for i in left_members_set:
+        resp = await update_user_status(i)
+        if resp:
+            infoLogger.info("User status successfully updated")
+        else:
+            errorLogger.error("Error while updating user status")
 
 
 async def getAllMembers():

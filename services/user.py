@@ -125,7 +125,9 @@ async def update_user_status(member_id):
     }
     try:
         resp = await send_request(method_type="PUT", url=url, data=myobj)
-        infoLogger.info("request for user status update is successfully sent")
+        infoLogger.info(
+            f"request for user({member_id}) status update is successfully sent"
+        )
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
         errorLogger.error("Error while updating user status in the database", e)
         return
