@@ -115,11 +115,11 @@ def get_password():
 
 
 # Update user status in database
-async def update_user_status(id):
+async def update_user_status(member_id):
     url = "/api/v1/users/left_discord"
     myobj = {
         "data": {
-            "attributes": {"discord_id": id},
+            "attributes": {"discord_id": member_id},
             "type": "users",
         }
     }
