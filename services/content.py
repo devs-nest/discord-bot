@@ -7,20 +7,11 @@ from dotenv import load_dotenv
 
 from client import client
 from logger import errorLogger, infoLogger
+from services.constants import STATUS_DESC_MAP
 from utils import data_not_found, send_request, take_input_dm
 
 load_dotenv()
 total_leaderboard_pages = 100
-
-STATUS_DESC_MAP = {
-    0: "Congratulations‼ \nThis question has been marked as done. Keep Going.. 😄",
-    1: "Hey, This question has been marked as undone. Try solving it. All the best‼ 😎",
-    2: (
-        "Seems like you're stuck‼ 😶\nThis question has been marked as doubt. "
-        "Give it a try, in case you are not able to solve it , "
-        "feel free to contact your mentor. Let this not hinder your learning. 👍"
-    ),
-}
 
 
 def extract_content(sample):
