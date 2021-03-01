@@ -26,14 +26,14 @@ def update_current_leaderboard_page_number(page):
 
 
 class UserMessageHandler:
-    def process_dn_assign_mentors(self, message):
+    async def process_dn_assign_mentors(self, message):
         asyncio.ensure_future(assign_mentors_to_all())
 
-    def process_dn_hello(self, message):
+    async def process_dn_hello(self, message):
         msg = f"Hello {message.author.mention}!"
         asyncio.ensure_future(message.channel.send(msg))
 
-    def process_dn_help(self, message):
+    async def process_dn_help(self, message):
         msg = (
             "dn-help: To get command help.\n\n"
             "dn-fetch: To get list of questions.\n\n"
@@ -106,13 +106,13 @@ class UserMessageHandler:
         ).set_thumbnail(url="https://cdn.wayscript.com/blog_img/83/DiscordBotThumb.png")
 
 
-def on_user_message(self, message):
-    if message.content.startswith("$dn"):
-        command = message.split(" ", 1)[0].replace("-", "_")
+async def on_user_message(message):
+    if message.content.startswith("dn"):
+        command = message.content.split(" ", 1)[0].replace("-", "_")
         method_name = f"process_{command}"
         method = getattr(UserMessageHandler(), method_name, None)
         if method:
-            method(message)
+            await method(message)
         else:
             asyncio.ensure_future(
                 message.channel.send(
