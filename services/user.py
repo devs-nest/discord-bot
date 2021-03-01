@@ -1,5 +1,6 @@
 import asyncio
 import os
+import random
 import re
 
 import discord
@@ -81,6 +82,7 @@ async def submit_user_details(member, user_email=None):
     url = "/api/v1/users"
     name = re.sub("[^\\-a-zA-Z0-9 @#$&._-]", "_", member.name)
     display_name = re.sub("[^\\-a-zA-Z0-9. @#$&_-]", "_", member.display_name)
+    password = get_password()
 
     myobj = {
         "data": {
@@ -89,8 +91,8 @@ async def submit_user_details(member, user_email=None):
                 "name": display_name,
                 "discord_id": str(member.id),
                 "username": name,
-                "password": "1234",
-                "buddy": 0,
+                "password": password,
+                "discord_active": 1,
             },
             "type": "users",
         }
@@ -100,6 +102,32 @@ async def submit_user_details(member, user_email=None):
         infoLogger.info("User request successfully sent")
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
         errorLogger.error("Error while registering the user to the database", e)
+        return
+
+    return resp.json()
+
+
+def get_password():
+    pwd = ""
+    for i in range(10):
+        pwd = pwd + str(random.randrange(10))
+    return pwd
+
+
+# Update user status in database
+async def update_user_status(member):
+    url = "/api/v1/users/left_discord"
+    myobj = {
+        "data": {
+            "attributes": {"discord_id": str(member.id)},
+            "type": "users",
+        }
+    }
+    try:
+        resp = await send_request(method_type="PUT", url=url, data=myobj)
+        infoLogger.info("User status successfully updated")
+    except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
+        errorLogger.error("Error while updating user status in the database", e)
         return
 
     return resp.json()

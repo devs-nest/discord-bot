@@ -36,6 +36,7 @@ class UserMessageHandler:
     async def process_dn_help(self, message):
         msg = (
             "dn-help: To get command help.\n\n"
+            "dn-whoami: To get your discord id.\n\n"
             "dn-fetch: To get list of questions.\n\n"
             "dn-mark-done: To mark a question as done.\n\n"
             "dn-mark-undone: To mark a question as undone.\n\n"
@@ -59,6 +60,10 @@ class UserMessageHandler:
     async def process_dn_fetch(self, message):
         if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(fetch(message))
+
+    async def process_dn_whoami(self, message):
+        msg = f"Your discord id is: `{message.author.id}`"
+        asyncio.ensure_future(message.channel.send(msg))
 
     async def process_dn_mark_done(self, message):
         if await check_channel_ask_a_bot(message):
