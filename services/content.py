@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 from client import client
 from logger import errorLogger, infoLogger
+from services.constants import STATUS_DESC_MAP
 from utils import data_not_found, send_request, take_input_dm
 
 load_dotenv()
@@ -250,23 +251,10 @@ async def mark_ques_status(user, command, status):
         return res
     res = res.json()
 
-    if status == 0:
-        desc = "Congratulations‼ \nThis question has been marked as done. Keep Going 😄"
-    elif status == 1:
-        desc = (
-            "Hey, This question has been marked as undone."
-            "Try solving it. All the best‼ 😎"
-        )
-    elif status == 2:
-        desc = (
-            "Seems like, you're Stuck‼ 😶\nThis question has been marked as doubt. "
-            "Give it a try, in case you are not able to solve, "
-            "feel free to contact your mentor. Let this not hinder your learning 👍"
-        )
+    # This statement can fail with KeyError if the status is anything greater than 2.
+    desc = STATUS_DESC_MAP[status]
     embed = discord.Embed(
-        title="Question status marked successfully 👍 ",
-        description=desc,  # This statement can fail with variable used befire
-        # assignment as there is no else block in the above else-if statements.
+        title="Question status marked successfully 👍 ", description=desc
     )
 
     if not res["data"]["id"]:

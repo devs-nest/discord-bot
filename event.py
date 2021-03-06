@@ -25,26 +25,15 @@ def update_current_leaderboard_page_number(page):
     current_leaderboard_page_number = page
 
 
-def get_prompt_help():
-    return discord.Embed(
-        title="DN Bot Guide",
-        description=(
-            "DN Bot is especially designed for the users of Devsnest Community. "
-            "DN bot is always there to help and make your learning fun. "
-            "Use the following commands for a smooth experience on the platform:\n"
-        ),
-    ).set_thumbnail(url="https://cdn.wayscript.com/blog_img/83/DiscordBotThumb.png")
-
-
-async def on_user_message(message):
-    if message.content.startswith("dn-assign-mentors"):
+class UserMessageHandler:
+    async def process_dn_assign_mentors(self, message):
         asyncio.ensure_future(assign_mentors_to_all())
 
-    if message.content.startswith("dn-hello"):
+    async def process_dn_hello(self, message):
         msg = f"Hello {message.author.mention}!"
         asyncio.ensure_future(message.channel.send(msg))
 
-    if message.content.startswith("dn-help"):
+    async def process_dn_help(self, message):
         msg = (
             "dn-help: To get command help.\n\n"
             "dn-whoami: To get your discord id.\n\n"
@@ -56,39 +45,39 @@ async def on_user_message(message):
             "dn-leaderboard: To get list of top 10 students of week.\n"
         )
 
-        prompt = get_prompt_help()
+        prompt = self._get_prompt_help()
         prompt.add_field(
             name="Here is your ultimate guide to DN bot.\n", value=msg, inline=False
         )
 
         asyncio.ensure_future(message.channel.send(embed=prompt))
 
-    if message.content.startswith("dn-email"):
+    async def process_dn_email(self, message):
         user_email = await get_user_email_and_id(message.author)
         if user_email:
             asyncio.ensure_future(submit_user_details(message.author, user_email))
 
-    if message.content.startswith('dn-whoami'):
-        msg = 'Your discord id: `{0.author.id}`'.format(message)
-        asyncio.ensure_future(message.channel.send(msg))
-
-    if message.content.startswith("dn-fetch"):
+    async def process_dn_fetch(self, message):
         if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(fetch(message))
 
-    if message.content.startswith("dn-mark-done"):
+    async def process_dn_whoami(self, message):
+        msg = f"Your discord id is: `{message.author.id}`"
+        asyncio.ensure_future(message.channel.send(msg))
+
+    async def process_dn_mark_done(self, message):
         if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(mark_ques_status(message.author, message, 0))
 
-    if message.content.startswith("dn-mark-undone"):
+    async def process_dn_mark_undone(self, message):
         if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(mark_ques_status(message.author, message, 1))
 
-    if message.content.startswith("dn-mark-doubt"):
+    async def process_dn_doubt(self, message):
         if await check_channel_ask_a_bot(message):
             asyncio.ensure_future(mark_ques_status(message.author, message, 2))
 
-    if message.content.startswith("dn-report"):
+    async def process_dn_report(self, message):
         if await check_channel_ask_a_bot(message):
             days = await calc_days(message)
             if days:
@@ -96,7 +85,7 @@ async def on_user_message(message):
                 # ToDo report handling
                 asyncio.ensure_future(show_user_report(resp, message, days))
 
-    if message.content.startswith("dn-leaderboard"):
+    async def process_dn_leaderboard(self, message):
         if await check_channel_ask_a_bot(message):
             global current_leaderboard_page_number
             global last_leaderboard_message_id
@@ -108,4 +97,31 @@ async def on_user_message(message):
 
             last_leaderboard_message_id = await get_leaderboard(
                 message, current_leaderboard_page_number
+            )
+
+    @staticmethod
+    def _get_prompt_help():
+        return discord.Embed(
+            title="DN Bot Guide",
+            description=(
+                "DN Bot is especially designed for the users of Devsnest Community. "
+                "DN bot is always there to help and make your learning fun. "
+                "Use the following commands for a smooth experience on the platform:\n"
+            ),
+        ).set_thumbnail(url="https://cdn.wayscript.com/blog_img/83/DiscordBotThumb.png")
+
+
+async def on_user_message(message):
+    if message.content.startswith("dn"):
+        command = message.content.split(" ", 1)[0].replace("-", "_")
+        method_name = f"process_{command}"
+        method = getattr(UserMessageHandler(), method_name, None)
+        if method:
+            await method(message)
+        else:
+            asyncio.ensure_future(
+                message.channel.send(
+                    "Seems like you have entered a wrong command. "
+                    "Enter `dn-help` to get a list of all valid commands."
+                )
             )
