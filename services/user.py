@@ -115,17 +115,19 @@ def get_password():
 
 
 # Update user status in database
-async def update_user_status(member):
+async def update_user_status(member_id):
     url = "/api/v1/users/left_discord"
     myobj = {
         "data": {
-            "attributes": {"discord_id": str(member.id)},
+            "attributes": {"discord_id": member_id},
             "type": "users",
         }
     }
     try:
         resp = await send_request(method_type="PUT", url=url, data=myobj)
-        infoLogger.info("User status successfully updated")
+        infoLogger.info(
+            f"request for user({member_id}) status update is successfully sent"
+        )
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
         errorLogger.error("Error while updating user status in the database", e)
         return

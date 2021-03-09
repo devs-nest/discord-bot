@@ -2,7 +2,7 @@ import requests
 
 from client import client
 from logger import errorLogger, infoLogger
-from services.user import submit_user_details
+from services.user import submit_user_details, update_user_status
 from utils import send_request
 
 
@@ -19,6 +19,26 @@ async def listExistingMembers():
                     f"with id {str(member.id)} is sent."
                 )
                 await submit_user_details(member)
+
+
+async def markLeftMembers():
+    res = await getAllMembers()
+    all_database_members_set = set()
+    for i in res["data"]:
+        all_database_members_set.add(int(i["attributes"]["discord_id"]))
+    all_members_on_discord_set = set()
+    for member in client.get_all_members():
+        if not member.bot:
+            all_members_on_discord_set.add(member.id)
+
+    left_members_set = all_database_members_set - all_members_on_discord_set
+
+    for i in left_members_set:
+        resp = await update_user_status(i)
+        if resp:
+            infoLogger.info("User status successfully updated")
+        else:
+            errorLogger.error("Error while updating user status")
 
 
 async def getAllMembers():
