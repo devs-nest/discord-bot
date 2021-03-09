@@ -325,7 +325,9 @@ async def add_leadeboard_reaction(message, reactions):
 async def get_leaderboard_embed(url, message, page=1):
 
     try:
-        res = await send_request(method_type="GET", url=f"{url}?page={str(page)}")
+        res = await send_request(
+            method_type="GET", url=f"{url}?page={str(page)}&size=10"
+        )
         infoLogger.info("Leaderboard is successfully retrieved.")
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
         errorLogger.error("Error while getting the leaderboard.", exc_info=e)
