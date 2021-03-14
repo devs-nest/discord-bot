@@ -17,8 +17,7 @@ load_dotenv()
 async def on_ready():
     print("Logged in as", client.user.name, client.user.id)
     print("------")
-
-    # await getMembersRole()
+    # await listExistingMembers()
 
 
 @client.event
