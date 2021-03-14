@@ -1,5 +1,4 @@
 import asyncio
-import os
 import random
 import re
 
@@ -14,28 +13,9 @@ from utils import send_request
 load_dotenv()
 
 # Send greeting msg to new user and post user details in DB
-GREETING_CHANNEL = os.getenv("GREETING_CHANNEL")
 
 
-def get_user_joined_prompt():
-    return discord.Embed(title="Devsnest Community").set_thumbnail(
-        url="https://miro.medium.com/max/1600/0*C-cPP9D2MIyeexAT.gif"
-    )
-
-
-# Send greeting msg to new user and post user details in DB
-async def new_member_joined(member, GREETING_CHANNEL):
-    ch = client.get_channel(GREETING_CHANNEL)
-
-    new_user_message = (
-        f"New member {member.name} has joined the channel. "
-        f"Everyone please welcome {member.name}."
-    )
-
-    user_prompt = get_user_joined_prompt()
-    user_prompt.add_field(name=" Welcome ", value=new_user_message, inline=False)
-    asyncio.ensure_future(ch.send(embed=user_prompt))
-
+async def new_member_joined(member):
     user_email = "temp@gmail.com"  # temporarily
     resp = await submit_user_details(member, user_email)
     return resp

@@ -17,7 +17,8 @@ load_dotenv()
 async def on_ready():
     print("Logged in as", client.user.name, client.user.id)
     print("------")
-    # await listExistingMembers()
+
+    # await getMembersRole()
 
 
 @client.event
@@ -35,7 +36,7 @@ async def on_member_remove(member):
 
 @client.event
 async def on_member_join(member):
-    _ = await new_member_joined(member, int(os.getenv("GREETING_CHANNEL")))
+    _ = await new_member_joined(member)
     # commenting as we're not assigning mentors right now.
     # todo: need to enable in the future
     """
