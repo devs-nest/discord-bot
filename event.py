@@ -1,4 +1,5 @@
 import asyncio
+from constants import HOW_TO_QUESTION_MESSAGE
 
 import discord
 from dotenv import load_dotenv
@@ -42,7 +43,8 @@ class UserMessageHandler:
             "dn-mark-undone: To mark a question as undone.\n\n"
             "dn-mark-doubt: To mark a question as doubt.\n\n"
             "dn-report: To get progress report.\n\n"
-            "dn-leaderboard: To get list of top 10 students of week.\n"
+            "dn-leaderboard: To get list of top 10 students of week.\n\n"
+            "dn-how-to-question: To get a guide on how to ask questions\n"
         )
 
         prompt = self._get_prompt_help()
@@ -63,6 +65,10 @@ class UserMessageHandler:
 
     async def process_dn_whoami(self, message):
         msg = f"Your discord id is: `{message.author.id}`"
+        asyncio.ensure_future(message.channel.send(msg))
+
+    async def process_dn_how_to_question(self, message):
+        msg = HOW_TO_QUESTION_MESSAGE
         asyncio.ensure_future(message.channel.send(msg))
 
     async def process_dn_mark_done(self, message):
